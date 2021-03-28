@@ -2,31 +2,39 @@ import assembler.Assembler
 import vmTranslator.VmTranslator
 import java.io.File
 import java.nio.file.Path
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.nameWithoutExtension
+import kotlin.io.path.*
 
 @ExperimentalPathApi
 fun main(args: Array<String>) {
-    val path = args[0]
-    val code = readFile(path)
+    val path = Path.of(args[0])
 
     val output: List<String>
-    val outputExtension: String
+    val outputPath: String
     when {
-        path.endsWith(".asm") -> {
+        path.extension == "asm" -> {
+            val code = readFile(path.toString())
             output = Assembler().assemble(code)
-            outputExtension = "hack"
+            outputPath = path.toString().replaceAfter(".", "hack")
         }
-        path.endsWith(".vm") -> {
-            output = VmTranslator().translate(code, Path.of(path).nameWithoutExtension)
-            outputExtension = "asm"
+        path.extension == "vm" -> {
+            val code = readFile(path.toString())
+            output = VmTranslator().translate(code, path.nameWithoutExtension)
+            outputPath = path.toString().replaceAfter(".", "asm")
+
+        }
+        path.isDirectory() -> {
+            val translator = VmTranslator()
+            path.listDirectoryEntries().filter { file -> file.extension == "vm" }.forEach { file ->
+                translator.translate(readFile(file.toString()), file.nameWithoutExtension)
+            }
+            output = translator.getFullCode()
+            outputPath = "$path.asm"
         }
         else -> {
             throw Exception("Unknown filetype")
         }
     }
 
-    val outputPath = path.replaceAfter(".", outputExtension)
     writeFile(output, outputPath)
 }
 
@@ -39,7 +47,7 @@ fun writeFile(lines: List<String>, path: String) {
     file.createNewFile()
     val writer = file.writer()
     lines.forEach { line ->
-        writer.write(line);
+        writer.write(line)
         writer.write("\n")
     }
     writer.flush()

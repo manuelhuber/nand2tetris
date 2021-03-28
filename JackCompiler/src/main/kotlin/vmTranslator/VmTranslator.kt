@@ -11,9 +11,11 @@ class VmTranslator {
         return counter++;
     }
 
+    fun getFullCode(): MutableList<String> {
+        return assembly.output
+    }
+
     fun translate(code: List<String>, staticIdentifier: String): List<String> {
-        assembly.reset()
-        counter = 0
         this.staticIdentifier = staticIdentifier
         code.filter(String::isCode).forEach(this::translateLine)
         return assembly.output
@@ -32,9 +34,9 @@ class VmTranslator {
             "or" -> translateBasicTwoTermOperation("|")
             "neg" -> translateBasicSingleTermOperation("-")
             "not" -> translateBasicSingleTermOperation("!")
-            "gt" -> translateCompareTwoOperators(Jump.IfGreater)
-            "lt" -> translateCompareTwoOperators(Jump.IfLess)
-            "eq" -> translateCompareTwoOperators(Jump.IfEqual)
+            "gt" -> translateComparison(Jump.IfGreater)
+            "lt" -> translateComparison(Jump.IfLess)
+            "eq" -> translateComparison(Jump.IfEqual)
         }
     }
 
@@ -151,7 +153,7 @@ class VmTranslator {
         }
     }
 
-    private fun translateCompareTwoOperators(jumpCondition: Jump) {
+    private fun translateComparison(jumpCondition: Jump) {
         val trueLabel = "true${getCounterAndIncrement()}"
         val continueLabel = "continue${getCounterAndIncrement()}"
         assembly.addCode {
