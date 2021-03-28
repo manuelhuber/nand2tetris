@@ -62,6 +62,11 @@ class AssemblyDsl {
     fun jump() {
         jump("0", Jump.Always)
     }
+
+    fun call(function: String, argCount: Int = 0) {
+        val args = if (argCount > 0) " $argCount" else ""
+        output.add("call $function$args")
+    }
 }
 
 

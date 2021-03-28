@@ -2,10 +2,22 @@ package vmTranslator
 
 import utils.isCode
 
-class VmTranslator {
+class VmTranslator() {
     private lateinit var staticIdentifier: String
     private var assembly = AssemblyDsl()
     private var counter = 0;
+
+    constructor(bootstrap: Boolean) : this() {
+        if (bootstrap)
+            assembly.addCode {
+                address("256")
+                setData(Memory)
+                address(StackPointer)
+                setMemory(Data)
+                call("Sys.init")
+            }
+    }
+
 
     private fun getCounterAndIncrement(): Int {
         return counter++;

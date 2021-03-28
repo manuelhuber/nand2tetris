@@ -23,7 +23,7 @@ fun main(args: Array<String>) {
 
         }
         path.isDirectory() -> {
-            val translator = VmTranslator()
+            val translator = VmTranslator(true)
             path.listDirectoryEntries().filter { file -> file.extension == "vm" }.forEach { file ->
                 translator.translate(readFile(file.toString()), file.nameWithoutExtension)
             }
