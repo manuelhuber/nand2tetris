@@ -49,6 +49,9 @@ class VmTranslator() {
             "gt" -> translateComparison(Jump.IfGreater)
             "lt" -> translateComparison(Jump.IfLess)
             "eq" -> translateComparison(Jump.IfEqual)
+            "label" -> translateLabel(tokens)
+            "goto" -> translateGoto(tokens)
+            "if-goto" -> translateConditionalGoto(tokens)
         }
     }
 
@@ -196,4 +199,29 @@ class VmTranslator() {
         }
     }
 
+    private fun translateLabel(tokens: List<String>) {
+        val labelName = tokens[1]
+        assembly.addCode {
+            addLabel(labelName)
+        }
+    }
+
+    private fun translateGoto(tokens: List<String>) {
+        val label = tokens[1]
+        assembly.addCode {
+            address(label)
+            jump()
+        }
+    }
+
+    private fun translateConditionalGoto(tokens: List<String>) {
+        val label = tokens[1]
+        assembly.addCode {
+            decrementStackPointer()
+            addressPointer(StackPointer)
+            setData(Memory)
+            address(label)
+            jump(Data, Jump.IfNotEqual)
+        }
+    }
 }
