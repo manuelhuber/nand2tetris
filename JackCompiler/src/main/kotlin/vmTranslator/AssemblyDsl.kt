@@ -41,6 +41,13 @@ class AssemblyDsl {
         output.add("$Memory=$value")
     }
 
+    fun copyMemory(from: String, to: String) {
+        address(from)
+        setData(Memory)
+        address(to)
+        setMemory(Data)
+    }
+
     fun incrementStackPointer() {
         address(StackPointer)
         setMemory("$Memory+1")
@@ -61,11 +68,6 @@ class AssemblyDsl {
 
     fun jump() {
         jump("0", Jump.Always)
-    }
-
-    fun call(function: String, argCount: Int = 0) {
-        val args = if (argCount > 0) " $argCount" else ""
-        output.add("call $function$args")
     }
 }
 

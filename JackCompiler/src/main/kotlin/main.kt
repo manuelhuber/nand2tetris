@@ -28,7 +28,7 @@ fun main(args: Array<String>) {
                 translator.translate(readFile(file.toString()), file.nameWithoutExtension)
             }
             output = translator.getFullCode()
-            outputPath = "$path.asm"
+            outputPath = "$path/${path.fileName}.asm"
         }
         else -> {
             throw Exception("Unknown filetype")

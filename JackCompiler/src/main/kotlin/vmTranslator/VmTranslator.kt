@@ -3,21 +3,26 @@ package vmTranslator
 import utils.isCode
 
 class VmTranslator() {
-    private lateinit var staticIdentifier: String
+    private var staticIdentifier: String = "MAIN"
     private var assembly = AssemblyDsl()
     private var counter = 0;
+    private val savedFrame = listOf(Local, Argument, This, That)
 
     constructor(bootstrap: Boolean) : this() {
         if (bootstrap)
             assembly.addCode {
                 address("256")
-                setData(Memory)
+                setData(Address)
                 address(StackPointer)
                 setMemory(Data)
-                call("Sys.init")
+                translateFunctionCall(listOf("call", "Sys.init", "0"))
             }
     }
 
+    private fun frameSize(): Int {
+        // +1 for the return address
+        return savedFrame.count() + 1
+    }
 
     private fun getCounterAndIncrement(): Int {
         return counter++;
@@ -52,6 +57,9 @@ class VmTranslator() {
             "label" -> translateLabel(tokens)
             "goto" -> translateGoto(tokens)
             "if-goto" -> translateConditionalGoto(tokens)
+            "function" -> translateFunctionDeclaration(tokens)
+            "call" -> translateFunctionCall(tokens)
+            "return" -> translateReturn()
         }
     }
 
@@ -131,7 +139,7 @@ class VmTranslator() {
             setData(Address)
             address(base)
             setData("$Data+$Memory") // this is the target address
-            address("13") // general purpose register
+            address(R13) // general purpose register
             setMemory(Data)
 
             // 2. Store stack value in data
@@ -140,7 +148,7 @@ class VmTranslator() {
             setData(Memory)
 
             // 3. Push data to target address
-            addressPointer("13")
+            addressPointer(R13)
             setMemory(Data)
         }
     }
@@ -224,4 +232,106 @@ class VmTranslator() {
             jump(Data, Jump.IfNotEqual)
         }
     }
+
+    private fun translateFunctionDeclaration(tokens: List<String>) {
+        val functionName = tokens[1]
+        val localStackSize = tokens[2].toInt()
+        assembly.addCode {
+            addLabel(functionName)
+            for (i in 1..localStackSize) {
+                addressPointer(StackPointer)
+                setMemory("0")
+                incrementStackPointer()
+            }
+        }
+    }
+
+    private fun translateFunctionCall(tokens: List<String>) {
+        val functionName = tokens[1]
+        val argCount = tokens[2].toInt()
+        val returnLabel = "$staticIdentifier.$functionName\$ret.${getCounterAndIncrement()}"
+        assembly.addCode {
+
+            // push return label
+            address(returnLabel)
+            setData(Address)
+            addressPointer(StackPointer)
+            setMemory(Data)
+            incrementStackPointer()
+
+            // save caller's frame
+            for (pointer in savedFrame) {
+                address(pointer)
+                setData(Memory)
+                addressPointer(StackPointer)
+                setMemory(Data)
+                incrementStackPointer()
+            }
+
+            // Set arg to the position
+            // ARG = SP - argCount - frameSize
+            address(argCount.toString())
+            setData(Address)
+            address(frameSize().toString())
+            setData("$Data+$Address")
+            address(StackPointer)
+            setData("$Memory-$Data")
+            address(Argument)
+            setMemory(Data)
+
+            // LCL = SP
+            copyMemory(StackPointer, Local)
+
+            address(functionName)
+            jump()
+
+            addLabel(returnLabel)
+        }
+    }
+
+    private fun translateReturn() {
+        assembly.addCode {
+
+            // R13 = lcl
+            // We will count down R13 to go through the saved frame
+            copyMemory(Local, R13)
+
+            // save returnAddress in R14
+            address(Local)
+            setData(Memory)
+            address(frameSize().toString())
+            // A = *LCL - frameSize = location where return address is saved
+            setAddress("$Data-$Address")
+            setData(Memory)
+            address(R14)
+            setMemory(Data)
+
+            // *ARG = pop()
+            decrementStackPointer()
+            addressPointer(StackPointer)
+            setData(Memory)
+            addressPointer(Argument)
+            setMemory(Data)
+
+            // SP = ARG + 1
+            address(Argument)
+            setData("$Memory+1")
+            address(StackPointer)
+            setMemory(Data)
+
+            for (pointer in savedFrame.reversed()) {
+                address(R13)
+                setMemory("$Memory-1")
+                setAddress(Memory)
+                setData(Memory)
+                address(pointer)
+                setMemory(Data)
+            }
+
+            // jump to return address
+            addressPointer(R14)
+            jump()
+        }
+    }
+
 }

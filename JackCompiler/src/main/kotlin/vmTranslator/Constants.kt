@@ -12,6 +12,11 @@ const val Argument = "ARG"
 const val This = "THIS"
 const val That = "THAT"
 
+// general purpose register
+const val R13 = "13"
+const val R14 = "14"
+const val R15 = "15"
+
 val stackTable = hashMapOf(
     "local" to Local,
     "argument" to Argument,
