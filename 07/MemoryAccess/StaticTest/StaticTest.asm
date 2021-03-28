@@ -28,7 +28,7 @@ M=M-1
 @SP
 A=M
 D=M
-@StaticTest}.8
+@StaticTest.8
 M=D
 // pop static 3
 @SP
@@ -36,7 +36,7 @@ M=M-1
 @SP
 A=M
 D=M
-@StaticTest}.3
+@StaticTest.3
 M=D
 // pop static 1
 @SP
@@ -44,19 +44,19 @@ M=M-1
 @SP
 A=M
 D=M
-@StaticTest}.1
+@StaticTest.1
 M=D
 // push static 3
-@StaticTest}.3
-D=A
+@StaticTest.3
+D=M
 @SP
 A=M
 M=D
 @SP
 M=M+1
 // push static 1
-@StaticTest}.1
-D=A
+@StaticTest.1
+D=M
 @SP
 A=M
 M=D
@@ -72,12 +72,12 @@ D=M
 M=M-1
 @SP
 A=M
-M=M - D
+M=M-D
 @SP
 M=M+1
 // push static 8
-@StaticTest}.8
-D=A
+@StaticTest.8
+D=M
 @SP
 A=M
 M=D
@@ -93,6 +93,6 @@ D=M
 M=M-1
 @SP
 A=M
-M=M + D
+M=M+D
 @SP
 M=M+1

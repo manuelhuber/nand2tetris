@@ -1,6 +1,6 @@
 package vmTranslator
 
-import assembler.isCode
+import utils.isCode
 
 class VmTranslator {
     private lateinit var staticIdentifier: String
@@ -12,12 +12,14 @@ class VmTranslator {
     }
 
     fun translate(code: List<String>, staticIdentifier: String): List<String> {
+        assembly.reset()
+        counter = 0
         this.staticIdentifier = staticIdentifier
-        code.filter { line -> line.isCode() }.forEach(this::translateLine)
+        code.filter(String::isCode).forEach(this::translateLine)
         return assembly.output
     }
 
-    fun translateLine(line: String) {
+    private fun translateLine(line: String) {
         assembly.addComment(line)
         val tokens = line.split(' ')
         val operation = tokens[0]
@@ -77,11 +79,16 @@ class VmTranslator {
     private fun translatePop(tokens: List<String>) {
         val stack = tokens[1]
         val number = tokens[2]
+
+        val baseAddress = stackTable[stack]
+        if (baseAddress != null) {
+            return popToGenericLocation(baseAddress, number)
+        }
+
         assembly.addCode {
             decrementStackPointer()
             addressPointer(StackPointer)
             setData(Memory)
-
             when (stack) {
                 "static" -> {
                     address("$staticIdentifier.$number")
@@ -95,32 +102,29 @@ class VmTranslator {
                     address(if (number == "0") This else That)
                     setMemory(Data)
                 }
-                else -> {
-                    val base = stackTable[stack]
-
-                    // 1. Get target address and save it in R13
-                    // e.g. pop local 3
-                    address(number) // a = 3
-                    setData(Address) // d = a
-                    address(base!!) // a = 1
-                    setData("$Data+$Memory") // d = 3+RAM[1] // this is the target address
-                    addressPointer(StackPointer) // a = RAM[a]
-                    setAddress("13") // general purpose register
-                    setMemory(Data)
-
-                    // Store value in data
-                    addressPointer(StackPointer)
-                    setData(Memory)
-
-                    // Push data to target address
-                    addressPointer(StackPointer)
-                    setAddress("13")
-                    setAddress(Memory)
-                    setMemory(Data)
-                }
             }
+        }
 
+    }
 
+    private fun popToGenericLocation(base: String, number: String) {
+        assembly.addCode {
+            // 1. Calculate target address and save it in R13
+            address(number)
+            setData(Address)
+            address(base)
+            setData("$Data+$Memory") // this is the target address
+            address("13") // general purpose register
+            setMemory(Data)
+
+            // 2. Store stack value in data
+            decrementStackPointer()
+            addressPointer(StackPointer)
+            setData(Memory)
+
+            // 3. Push data to target address
+            addressPointer("13")
+            setMemory(Data)
         }
     }
 

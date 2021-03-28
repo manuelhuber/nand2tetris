@@ -1,5 +1,7 @@
 package assembler
 
+import utils.removeComments
+
 class Assembler {
     private var symbols: HashMap<String, Int> = HashMap();
 
@@ -11,17 +13,18 @@ class Assembler {
         return convertToBinary(cleanedCode)
     }
 
-    private fun convertToBinary(code: List<String>): List<String> {
-        return code.map(::instructionToBinary)
-    }
-
-    private fun removeComments(code: List<String>): List<String> {
-        return code.filter(String::isCode).map { line ->
-            val indexOf = line.indexOf("//")
-            if (indexOf == -1) {
-                return@map line
+    private fun removeGotoSymbols(code: List<String>): List<String> {
+        var lineOfCode = 0
+        return code.filter { line ->
+            if (line.isGotoLabel()) {
+                val symbol = line.substring(1, line.length - 1)
+                if (symbols.containsKey(symbol)) throw InvalidSyntax("Duplicate symbol:$symbol")
+                symbols[symbol] = lineOfCode
+                return@filter false
+            } else {
+                lineOfCode++
+                return@filter true
             }
-            line.substring(0, indexOf).trim()
         }
     }
 
@@ -39,26 +42,13 @@ class Assembler {
             return "@${value}"
         }
 
-        return code
-            .filter { s -> !s.isGotoLabel() }
-            .map { line ->
-                if (line.isAInstruction()) replaceASymbol(line) else line
-            }
+        return code.map { line ->
+            if (line.isAInstruction()) replaceASymbol(line) else line
+        }
     }
 
-    private fun removeGotoSymbols(code: List<String>): List<String> {
-        var lineOfCode = 0
-        return code.filter { line ->
-            if (line.isGotoLabel()) {
-                val symbol = line.substring(1, line.length - 1)
-                if (symbols.containsKey(symbol)) throw InvalidSyntax("Duplicate symbol:$symbol")
-                symbols[symbol] = lineOfCode
-                return@filter false
-            } else {
-                lineOfCode++
-            }
-            true
-        }
+    private fun convertToBinary(code: List<String>): List<String> {
+        return code.map(::instructionToBinary)
     }
 
 }

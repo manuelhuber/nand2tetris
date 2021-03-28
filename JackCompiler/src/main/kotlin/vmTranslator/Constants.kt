@@ -1,5 +1,7 @@
 package vmTranslator
 
+const val TempStackBaseAddress = 5
+
 const val Address = "A"
 const val Memory = "M"
 const val Data = "D"

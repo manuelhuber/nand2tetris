@@ -3,7 +3,10 @@ package vmTranslator
 
 class AssemblyDsl {
     val output = mutableListOf<String>()
-    private val tempStackBase = 5
+
+    fun reset() {
+        output.clear()
+    }
 
     fun addCode(statements: AssemblyDsl.() -> Unit) {
         this.statements()
@@ -14,7 +17,7 @@ class AssemblyDsl {
     }
 
     fun addressTmp(num: Int) {
-        output.add("@${tempStackBase + num}")
+        output.add("@${TempStackBaseAddress + num}")
     }
 
     fun address(string: String) {

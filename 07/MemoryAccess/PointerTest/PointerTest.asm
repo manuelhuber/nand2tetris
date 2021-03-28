@@ -39,21 +39,18 @@ M=D
 @SP
 M=M+1
 // pop this 2
+@2
+D=A
+@THIS
+D=D+M
+@13
+M=D
 @SP
 M=M-1
 @SP
 A=M
 D=M
-@2
-D=A
-@THIS
-D=D+M
-A=SP + 1
-M=D
-@SP
-A=M
-D=M
-A=SP + 1
+@13
 A=M
 M=D
 // push constant 46
@@ -65,21 +62,18 @@ M=D
 @SP
 M=M+1
 // pop that 6
+@6
+D=A
+@THAT
+D=D+M
+@13
+M=D
 @SP
 M=M-1
 @SP
 A=M
 D=M
-@6
-D=A
-@THAT
-D=D+M
-A=SP + 1
-M=D
-@SP
-A=M
-D=M
-A=SP + 1
+@13
 A=M
 M=D
 // push pointer 0
@@ -108,7 +102,7 @@ D=M
 M=M-1
 @SP
 A=M
-M=M + D
+M=M+D
 @SP
 M=M+1
 // push this 2
@@ -132,7 +126,7 @@ D=M
 M=M-1
 @SP
 A=M
-M=M - D
+M=M-D
 @SP
 M=M+1
 // push that 6
@@ -156,6 +150,6 @@ D=M
 M=M-1
 @SP
 A=M
-M=M + D
+M=M+D
 @SP
 M=M+1
