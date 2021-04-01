@@ -1,7 +1,7 @@
 package utils
 
 fun String.isCode(): Boolean {
-    return this.isNotEmpty() && !this.startsWith("//")
+    return isNotEmpty() && !startsWith("//") && !startsWith("/**") && !startsWith("*")
 }
 
 fun removeComments(code: List<String>): List<String> {

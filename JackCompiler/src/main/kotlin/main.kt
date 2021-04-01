@@ -1,4 +1,6 @@
 import assembler.Assembler
+import compiler.Token
+import compiler.Tokenizer
 import vmTranslator.VmTranslator
 import java.io.File
 import java.nio.file.Path
@@ -11,17 +13,6 @@ fun main(args: Array<String>) {
     val output: List<String>
     val outputPath: String
     when {
-        path.extension == "asm" -> {
-            val code = readFile(path.toString())
-            output = Assembler().assemble(code)
-            outputPath = path.toString().replaceAfter(".", "hack")
-        }
-        path.extension == "vm" -> {
-            val code = readFile(path.toString())
-            output = VmTranslator().translate(code, path.nameWithoutExtension)
-            outputPath = path.toString().replaceAfter(".", "asm")
-
-        }
         path.isDirectory() -> {
             val translator = VmTranslator(true)
             path.listDirectoryEntries().filter { file -> file.extension == "vm" }.forEach { file ->
@@ -31,11 +22,30 @@ fun main(args: Array<String>) {
             outputPath = "$path/${path.fileName}.asm"
         }
         else -> {
-            throw Exception("Unknown filetype")
+            val code = readFile(path.toString())
+            when (path.extension) {
+                "asm" -> {
+                    output = Assembler().assemble(code)
+                    outputPath = path.toString().replaceAfter(".", "hack")
+                }
+                "vm" -> {
+                    output = VmTranslator().translate(code, path.nameWithoutExtension)
+                    outputPath = path.toString().replaceAfter(".", "asm")
+                }
+                "jack" -> {
+
+                    output = Tokenizer().tokenize(code).map(Token::toString)
+                    outputPath = path.toString().replaceAfter(".", "tokens.xml")
+                }
+                else -> {
+                    throw Exception("Unknown filetype")
+                }
+            }
         }
     }
-
-    writeFile(output, outputPath)
+    if (outputPath.isNotEmpty()) {
+        writeFile(output, outputPath)
+    }
 }
 
 fun readFile(path: String): List<String> {
