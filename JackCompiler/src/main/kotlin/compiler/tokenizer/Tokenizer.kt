@@ -1,5 +1,9 @@
-package compiler
+package compiler.tokenizer
 
+import compiler.KEYWORDS
+import compiler.Keyword
+import compiler.SYMBOLS
+import compiler.Symbol
 import utils.isCode
 
 class Tokenizer {
@@ -19,24 +23,24 @@ class Tokenizer {
                 char.isWhitespace() -> {
                     pos++
                 }
-                char == SLASH && pos < line.length - 1 && line[pos + 1] == SLASH -> {
+                char == Symbol.SLASH.value && pos < line.length - 1 && line[pos + 1] == Symbol.SLASH.value -> {
                     // remove online comments
                     pos = line.length
                 }
                 SYMBOLS.contains(char) -> {
-                    tokens.add(Symbol(char.toString()))
+                    tokens.add(SymbolToken(Symbol.fromValue(char)))
                     pos++
                 }
                 char == '"' -> {
                     var end = pos + 1
                     while (line[end] != '"') end++
-                    tokens.add(StringConstant(line.substring(pos + 1, end)))
+                    tokens.add(StringConstantToken(line.substring(pos + 1, end)))
                     pos = end + 1
                 }
                 char.isDigit() -> {
                     var end = pos + 1
                     while (line[end].isDigit() && end < line.length) end++
-                    tokens.add(IntegerConstant(line.substring(pos, end)))
+                    tokens.add(IntegerConstantToken(line.substring(pos, end).toInt()))
                     pos = end
                 }
                 else -> {
@@ -44,7 +48,8 @@ class Tokenizer {
                     fun isWordEnd(i: Int) = i == line.length || SYMBOLS.contains(line[i]) || line[i].isWhitespace()
                     while (!isWordEnd(end)) end++
                     val word = line.substring(pos, end)
-                    val token = if (KEYWORDS.contains(word)) Keyword(word) else Identifier(word)
+                    val token =
+                        if (KEYWORDS.contains(word)) KeywordToken(Keyword.fromValue(word)) else IdentifierToken(word)
                     tokens.add(token)
                     pos = end
                 }

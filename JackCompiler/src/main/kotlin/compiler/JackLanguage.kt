@@ -1,89 +1,88 @@
 package compiler
 
-const val CLASS: String = "class"
-const val CONSTRUCTOR: String = "constructor"
-const val FUNCTION: String = "function"
-const val METHOD: String = "method"
-const val FIELD: String = "field"
-const val STATIC: String = "static"
-const val VAR: String = "var"
-const val INT: String = "int"
-const val CHAR: String = "char"
-const val BOOLEAN: String = "boolean"
-const val VOID: String = "void"
-const val TRUE: String = "true"
-const val FALSE: String = "false"
-const val NULL: String = "null"
-const val THIS: String = "this"
-const val LET: String = "let"
-const val DO: String = "do"
-const val IF: String = "if"
-const val ELSE: String = "else"
-const val WHILE: String = "while"
-const val RETURN: String = "return"
+enum class Keyword(val value: String) {
+    CLASS("class"),
+    CONSTRUCTOR("constructor"),
+    FUNCTION("function"),
+    METHOD("method"),
+    FIELD("field"),
+    STATIC("static"),
+    VAR("var"),
+    INT("int"),
+    CHAR("char"),
+    BOOLEAN("boolean"),
+    VOID("void"),
+    TRUE("true"),
+    FALSE("false"),
+    NULL("null"),
+    THIS("this"),
+    LET("let"),
+    DO("do"),
+    IF("if"),
+    ELSE("else"),
+    WHILE("while"),
+    RETURN("return");
 
-val KEYWORDS = hashSetOf(
-    CLASS,
-    CONSTRUCTOR,
-    FUNCTION,
-    METHOD,
-    FIELD,
-    STATIC,
-    VAR,
-    INT,
-    CHAR,
-    BOOLEAN,
-    VOID,
-    TRUE,
-    FALSE,
-    NULL,
-    THIS,
-    LET,
-    DO,
-    IF,
-    ELSE,
-    WHILE,
-    RETURN
-)
+    companion object {
+        fun fromValue(keyword: String) = values().first { symbol -> symbol.value == keyword }
+    }
+}
 
-const val CURLY_BRACKET_OPEN = '{'
-const val CURLY_BRACKET_CLOSE = '}'
-const val ROUND_BRACKET_OPEN = '('
-const val ROUND_BRACKET_CLOSE = ')'
-const val SQUARE_BRACKET_OPEN = '['
-const val SQUARE_BRACKET_CLOSE = ']'
-const val DOT = '.'
-const val COMMA = ','
-const val SEMICOLON = ';'
-const val PLUS = '+'
-const val MINUS = '-'
-const val STAR = '*'
-const val SLASH = '/'
-const val AMPERSAND = '&'
-const val PIPE = '|'
-const val LESS_THAN = '<'
-const val MORE_THAN = '>'
-const val EQUAL = '='
-const val NEGATE = '~'
+val KEYWORDS = Keyword.values().map { keyword -> keyword.value }.toHashSet()
 
-val SYMBOLS = hashSetOf(
-    CURLY_BRACKET_OPEN,
-    CURLY_BRACKET_CLOSE,
-    ROUND_BRACKET_OPEN,
-    ROUND_BRACKET_CLOSE,
-    SQUARE_BRACKET_OPEN,
-    SQUARE_BRACKET_CLOSE,
-    DOT,
-    COMMA,
-    SEMICOLON,
-    PLUS,
-    MINUS,
-    STAR,
-    SLASH,
-    AMPERSAND,
-    PIPE,
-    LESS_THAN,
-    MORE_THAN,
-    EQUAL,
-    NEGATE
-)
+enum class Symbol(val value: Char) {
+    CURLY_BRACKET_OPEN('{'),
+    CURLY_BRACKET_CLOSE('}'),
+    ROUND_BRACKET_OPEN('('),
+    ROUND_BRACKET_CLOSE(')'),
+    SQUARE_BRACKET_OPEN('['),
+    SQUARE_BRACKET_CLOSE(']'),
+    DOT('.'),
+    COMMA(','),
+    SEMICOLON(';'),
+    PLUS('+'),
+    MINUS('-'),
+    STAR('*'),
+    SLASH('/'),
+    AMPERSAND('&'),
+    PIPE('|'),
+    LESS_THAN('<'),
+    MORE_THAN('>'),
+    EQUAL('='),
+    NEGATE('~');
+
+    companion object {
+        fun fromValue(char: Char) = values().first { symbol -> symbol.value == char }
+    }
+}
+
+val SYMBOLS = Symbol.values().map { keyword -> keyword.value }.toHashSet()
+
+enum class Operator(val value: Symbol) {
+    PLUS(Symbol.PLUS),
+    MINUS(Symbol.MINUS),
+    STAR(Symbol.STAR),
+    SLASH(Symbol.SLASH),
+    AMPERSAND(Symbol.AMPERSAND),
+    PIPE(Symbol.PIPE),
+    LESS_THAN(Symbol.LESS_THAN),
+    MORE_THAN(Symbol.MORE_THAN),
+    EQUAL(Symbol.EQUAL);
+
+    companion object {
+        fun fromValue(symbol: Symbol) = values().first { op -> op.value == symbol }
+    }
+}
+
+val OPERATORS = Operator.values().map { keyword -> keyword.value.value }.toHashSet()
+
+enum class UnaryOperator(val value: Symbol) {
+    MINUS(Symbol.MINUS),
+    NEGATE(Symbol.NEGATE);
+
+    companion object {
+        fun fromValue(symbol: Symbol) = values().first { op -> op.value == symbol }
+    }
+}
+
+val UNARY_OPERATORS = UnaryOperator.values().map { keyword -> keyword.value }.toHashSet()

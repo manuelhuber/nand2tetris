@@ -1,6 +1,6 @@
 import assembler.Assembler
-import compiler.Token
-import compiler.Tokenizer
+import compiler.tokenizer.Token
+import compiler.tokenizer.Tokenizer
 import vmTranslator.VmTranslator
 import java.io.File
 import java.nio.file.Path
