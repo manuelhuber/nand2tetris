@@ -3,7 +3,7 @@ package compiler.tokenizer
 import compiler.Keyword
 import compiler.Symbol
 
-open class Token(val value: String) {
+sealed class Token(val value: String) {
 
     override fun toString(): String {
         val simpleName = this::javaClass.get().simpleName.toLowerCase()
