@@ -6,7 +6,7 @@ import compiler.Symbol
 sealed class Token(val value: String) {
 
     override fun toString(): String {
-        val simpleName = this::javaClass.get().simpleName.toLowerCase()
+        val simpleName = this::javaClass.get().simpleName.decapitalize().removeSuffix("Token")
         return "<$simpleName> $value </$simpleName>"
     }
 
@@ -31,3 +31,11 @@ class SymbolToken(val symbol: Symbol) : Token(symbol.value.toString())
 class IntegerConstantToken(val int: Int) : Token(int.toString())
 class StringConstantToken(value: String) : Token(value)
 class IdentifierToken(value: String) : Token(value)
+
+fun Token.isA(keyword: Keyword): Boolean {
+    return this is KeywordToken && this.keyword == keyword
+}
+
+fun Token.isA(symbol: Symbol): Boolean {
+    return this is SymbolToken && this.symbol == symbol
+}

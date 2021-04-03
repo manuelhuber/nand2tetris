@@ -57,17 +57,19 @@ class SubroutineCallTerm(val subroutineCall: SubroutineCall) : Term() {
 val validKeywordTerms = hashSetOf(Keyword.TRUE, Keyword.FALSE, Keyword.NULL, Keyword.THIS)
 
 fun JackDSL.compileTerm(): Term {
-    val token = consumeToken()
-    val value = token.value
-    return when (token) {
-        is StringConstantToken -> StringTerm(value)
-        is IntegerConstantToken -> IntegerTerm(token.int)
-        is KeywordToken -> {
-            if (validKeywordTerms.contains(token.keyword)) KeywordTerm(token.keyword)
-            else throw Exception("Unexpected keyword ${token.keyword.value}")
+    return inTag("term") {
+        val token = consumeToken()
+        val value = token.value
+        when (token) {
+            is StringConstantToken -> StringTerm(value)
+            is IntegerConstantToken -> IntegerTerm(token.int)
+            is KeywordToken -> {
+                if (validKeywordTerms.contains(token.keyword)) KeywordTerm(token.keyword)
+                else throw CompilationError("Unexpected keyword ${token.keyword.value}")
+            }
+            is IdentifierToken -> compileIdentifierToken(value)
+            is SymbolToken -> compileSymbolToken(token)
         }
-        is IdentifierToken -> compileIdentifierToken(value)
-        is SymbolToken -> compileSymbolToken(token)
     }
 }
 
@@ -101,6 +103,6 @@ private fun JackDSL.compileSymbolToken(token: SymbolToken): Term {
             val term = compileTerm()
             UnaryTerm(UnaryOperator.fromValue(token.symbol), term)
         }
-        else -> throw Exception("Expected valid term, but got symbol ${token.value}")
+        else -> throw CompilationError("Expected valid term, but got symbol ${token.value}")
     }
 }

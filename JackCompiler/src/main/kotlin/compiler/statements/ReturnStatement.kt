@@ -5,17 +5,20 @@ import compiler.Keyword
 import compiler.Symbol
 import compiler.expressions.Expression
 import compiler.expressions.compileExpression
-import compiler.tokenizer.SymbolToken
+import compiler.tokenizer.isA
 
-class ReturnStatement(val expression: Expression? = null)
+class ReturnStatement(val expression: Expression? = null) : Statement()
 
 fun JackDSL.compileReturnStatement(): ReturnStatement {
-    consumeKeyword(Keyword.RETURN)
-    val next = peak()
-    val expression = if (next is SymbolToken && next.symbol == Symbol.COMMA) {
-        compileExpression()
-    } else {
-        null
+    return inTag("returnStatement") {
+        consumeKeyword(Keyword.RETURN)
+        val next = peak()
+        val expression = if (!next.isA(Symbol.SEMICOLON)) {
+            compileExpression()
+        } else {
+            null
+        }
+        consumeSymbol(Symbol.SEMICOLON)
+        ReturnStatement(expression)
     }
-    return ReturnStatement(expression)
 }

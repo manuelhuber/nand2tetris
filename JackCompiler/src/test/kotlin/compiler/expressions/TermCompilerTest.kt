@@ -1,10 +1,10 @@
 package compiler.expressions
 
+import testCompilation
 import compiler.JackDSL
 import compiler.Operator
 import compiler.UnaryOperator
 import compiler.tokenizer.IntegerConstantToken
-import compiler.tokenizer.Tokenizer
 import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
@@ -12,16 +12,14 @@ import kotlin.test.assertEquals
 internal class TermCompilerTest {
     @Test
     fun testArrayTerm() {
-        val tokens = Tokenizer().tokenize(listOf("foo[1]"))
-        val term = JackDSL(tokens).analyze(JackDSL::compileTerm)
+        val term = testCompilation("foo[1]", JackDSL::compileTerm)
         assertEquals((term as ArrayVarNameTerm).value, "foo")
         assertEquals((term.ex.term as IntegerTerm).value, 1)
     }
 
     @Test
     fun testUnaryExpressionTerm() {
-        val tokens = Tokenizer().tokenize(listOf("-(4 + 3 * 10)"))
-        val term = JackDSL(tokens).analyze(JackDSL::compileTerm)
+        val term = testCompilation("-(4 + 3 * 10)", JackDSL::compileTerm)
         assertEquals((term as UnaryTerm).operator, UnaryOperator.MINUS)
         assertEquals(((term.term as ExpressionTerm).value.term as IntegerTerm).value, 4)
 
@@ -38,9 +36,8 @@ internal class TermCompilerTest {
 
     @Test
     fun testExpectedIdentifier() {
-        val tokens = Tokenizer().tokenize(listOf("MyClass.1function()"))
         val exception = assertThrows<Exception> {
-            JackDSL(tokens).analyze(JackDSL::compileTerm)
+            testCompilation("MyClass.1function()", JackDSL::compileTerm)
         }
         assertEquals(
             exception.message,

@@ -7,10 +7,12 @@ import compiler.tokenizer.SymbolToken
 class ExpressionList(val expressions: List<Expression> = emptyList())
 
 fun JackDSL.compileExpressionList(): ExpressionList {
-    val list = mutableListOf(compileExpression())
-    while (peak() is SymbolToken && peak().value[0] == Symbol.COMMA.value) {
-        consumeSymbol(Symbol.COMMA)
-        list.add(compileExpression())
+    return inTag("expressionList") {
+        val list = mutableListOf(compileExpression())
+        while (peak() is SymbolToken && peak().value[0] == Symbol.COMMA.value) {
+            consumeSymbol(Symbol.COMMA)
+            list.add(compileExpression())
+        }
+        ExpressionList(list)
     }
-    return ExpressionList(list)
 }

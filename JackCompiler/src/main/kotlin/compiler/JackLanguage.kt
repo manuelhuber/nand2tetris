@@ -66,7 +66,7 @@ enum class Operator(val value: Symbol) {
     AMPERSAND(Symbol.AMPERSAND),
     PIPE(Symbol.PIPE),
     LESS_THAN(Symbol.LESS_THAN),
-    MORE_THAN(Symbol.MORE_THAN),
+    GREATER_THAN(Symbol.MORE_THAN),
     EQUAL(Symbol.EQUAL);
 
     companion object {

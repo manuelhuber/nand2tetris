@@ -1,5 +1,6 @@
 package compiler.expressions
 
+import compiler.CompilationError
 import compiler.JackDSL
 import compiler.Symbol
 import compiler.tokenizer.SymbolToken
@@ -14,7 +15,7 @@ fun JackDSL.compileSubroutineCall(): SubroutineCall {
     val identifier = consumeIdentifier()
     val symbol = peak()
     if (symbol !is SymbolToken) {
-        throw Exception("Unexpected token ${symbol.value}")
+        throw CompilationError("Unexpected token ${symbol.value}")
     }
     return when (symbol.symbol) {
         Symbol.DOT -> {
@@ -29,7 +30,7 @@ fun JackDSL.compileSubroutineCall(): SubroutineCall {
             val args = compileArgsList()
             SubroutineCall(identifier.value, args)
         }
-        else -> throw Exception("Unexpected symbol '${symbol.symbol.value}' after identifier")
+        else -> throw CompilationError("Unexpected symbol '${symbol.symbol.value}' after identifier")
     }
 }
 
