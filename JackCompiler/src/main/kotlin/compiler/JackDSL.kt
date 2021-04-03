@@ -7,17 +7,17 @@ import compiler.tokenizer.Token
 
 class JackDSL(private val tokens: List<Token>) {
     private var index = 0
-    val compiledCode = mutableListOf<String>()
+    val compiledCodeAsXML = mutableListOf<String>()
     var indentationLevel: Int = 0
 
     // this is just a hacky addon to build the XML the course wants
     fun <T> inTag(tag: String, foo: JackDSL.() -> T): T {
         val indentation = "\t".repeat(indentationLevel)
-        compiledCode.add("$indentation<$tag> ")
+        compiledCodeAsXML.add("$indentation<$tag> ")
         indentationLevel++
         val t = foo()
         indentationLevel--
-        compiledCode.add("$indentation</$tag>")
+        compiledCodeAsXML.add("$indentation</$tag>")
         return t
     }
 
@@ -38,10 +38,14 @@ class JackDSL(private val tokens: List<Token>) {
         throw CompilationError("Expected ${acceptableSymbols.map(Symbol::value)} but found $token")
     }
 
-    fun consumeKeyword(symbol: Keyword): KeywordToken {
+    fun consumeKeyword(keyword: Keyword): KeywordToken {
+        return consumeKeyword(listOf(keyword))
+    }
+
+    fun consumeKeyword(acceptableKeywords: Collection<Keyword>): KeywordToken {
         val token = tokens[index]
-        if (token !is KeywordToken || token.value != symbol.value) {
-            throw CompilationError("Expected ${symbol.value} but found $token")
+        if (token !is KeywordToken || !acceptableKeywords.contains(token.keyword)) {
+            throw CompilationError("Expected $acceptableKeywords but found $token")
         }
         consumeToken()
         return token
@@ -58,7 +62,7 @@ class JackDSL(private val tokens: List<Token>) {
 
     fun consumeToken(): Token {
         val token = tokens[index]
-        compiledCode.add("\t".repeat(indentationLevel) + token.toString())
+        compiledCodeAsXML.add("\t".repeat(indentationLevel) + token.toString())
         index++
         return token
     }
@@ -69,6 +73,7 @@ class JackDSL(private val tokens: List<Token>) {
 
     fun backpaddle() {
         index--
+        compiledCodeAsXML.removeLast()
     }
 
     fun <T> analyze(x: JackDSL.() -> T): T {

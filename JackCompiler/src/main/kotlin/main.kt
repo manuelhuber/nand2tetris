@@ -1,5 +1,5 @@
 import assembler.Assembler
-import compiler.tokenizer.Token
+import compiler.Analyzer
 import compiler.tokenizer.Tokenizer
 import vmTranslator.VmTranslator
 import java.io.File
@@ -33,8 +33,9 @@ fun main(args: Array<String>) {
                     outputPath = path.toString().replaceAfter(".", "asm")
                 }
                 "jack" -> {
-
-                    output = Tokenizer().tokenize(code).map(Token::toString)
+                    val analyzer = Analyzer(Tokenizer().tokenize(code))
+                    analyzer.analyze()
+                    output = analyzer.jack.compiledCodeAsXML
                     outputPath = path.toString().replaceAfter(".", "tokens.xml")
                 }
                 else -> {
