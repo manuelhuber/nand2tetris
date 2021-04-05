@@ -14,8 +14,13 @@ class ParameterList(val pars: List<Parameter>) {
 fun JackAnalyzerDSL.compileParameterList(): ParameterList {
     return inTag("parameterList") {
         val pars = mutableListOf<Parameter>()
+        var first = true
         while (!peak().isA(Symbol.ROUND_BRACKET_CLOSE)) {
-            consumeSymbol(Symbol.COMMA)
+            if (first) {
+                first = false
+            } else {
+                consumeSymbol(Symbol.COMMA)
+            }
             pars.add(Parameter(compileType(), consumeIdentifier().value))
         }
         ParameterList(pars)

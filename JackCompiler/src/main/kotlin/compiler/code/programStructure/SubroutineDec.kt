@@ -21,9 +21,13 @@ class SubroutineDec(
 ) : JackCode() {
 
     private lateinit var className: String
+    private var constuctorSize: Int = 0
 
     private fun isMethod() = functionType == Keyword.METHOD
-    private fun isConstructor() = functionType == Keyword.CONSTRUCTOR
+    fun isConstructor() = functionType == Keyword.CONSTRUCTOR
+    fun setConstructorSize(size: Int) {
+        constuctorSize = size
+    }
 
     fun setClassName(s: String) {
         this.className = s
@@ -42,7 +46,7 @@ class SubroutineDec(
         }
 
         if (isConstructor()) {
-            push(VmStack.CONSTANT, localVarCount)
+            push(VmStack.CONSTANT, constuctorSize)
             call("Memory.alloc", 1)
             pop(VmStack.POINTER, 0)
         }
@@ -54,7 +58,7 @@ class SubroutineDec(
         // ARGS
         var argsIndex = 0
         if (isMethod()) {
-            symbols.add("this", VmVariable("", VmStack.ARGUMENT, argsIndex++))
+            argsIndex++ // args 0 is THIS
         }
         params.pars.forEach { parameter ->
             symbols.add(parameter.identifier, VmVariable(parameter.type, VmStack.ARGUMENT, argsIndex++))

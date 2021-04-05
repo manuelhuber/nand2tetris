@@ -34,7 +34,7 @@ internal class SubroutineCallTest {
         val subroutineCall = SubroutineCall("foo", ExpressionList(args), "myTarget")
         val dsl = VmDSL()
         val classSymbols = SymbolTable()
-        classSymbols.add("myTarget", VmVariable("", VmStack.LOCAL, 4))
+        classSymbols.add("myTarget", VmVariable("MyClass", VmStack.LOCAL, 4))
 
         subroutineCall.compileToVm(dsl, classSymbols)
         assertEquals(
@@ -44,7 +44,7 @@ internal class SubroutineCallTest {
                 "push constant 5",
                 "push constant 1",
                 "add",
-                "call foo 2",
+                "call MyClass.foo 2",
             )
         )
     }

@@ -10,12 +10,14 @@ import utils.Symbol
 
 class SubroutineCall(val functionName: String, val args: ExpressionList, val targetName: String? = null) : JackCode() {
     override fun VmDSL.addVmCode(symbols: SymbolTable) {
-        val isMethodCall = targetName != null && targetName[0].isLowerCase()
+        val isMethodCall = targetName == null || targetName[0].isLowerCase()
+        var name = if (targetName == null) functionName else "$targetName.$functionName"
         if (isMethodCall) {
-            push(symbols.lookup(targetName!!))
+            val variable = symbols.lookup(targetName ?: "this")!!
+            push(variable)
+            name = "${variable.type}.$functionName"
         }
         args.compileToVm(this, symbols)
-        var name = if (targetName == null) functionName else "$targetName.$functionName"
         call(name, args.count() + if (isMethodCall) 1 else 0)
     }
 }

@@ -1,15 +1,15 @@
 package compiler.code.programStructure
 
 import compiler.JackAnalyzerDSL
+import compiler.tokenizer.isA
 import utils.Keyword
 import utils.Symbol
-import compiler.tokenizer.isA
 
-class VarDec(val type: String, val names: List<String>)
+class VarDec(val fieldType: Keyword, val type: String, val names: List<String>)
 
 fun JackAnalyzerDSL.compileVarDec(): VarDec {
     return inTag("varDec") {
-        consumeKeyword(Keyword.VAR)
+        val fieldType = consumeKeyword(listOf(Keyword.VAR, Keyword.FIELD, Keyword.STATIC))
         val type = compileType()
         val names = mutableListOf(consumeIdentifier().value)
         while (peak().isA(Symbol.COMMA)) {
@@ -18,6 +18,6 @@ fun JackAnalyzerDSL.compileVarDec(): VarDec {
         }
         consumeSymbol(Symbol.SEMICOLON)
 
-        VarDec(type, names)
+        VarDec(fieldType.keyword, type, names)
     }
 }

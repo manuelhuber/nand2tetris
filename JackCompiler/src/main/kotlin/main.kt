@@ -12,44 +12,55 @@ import kotlin.io.path.*
 fun main(args: Array<String>) {
     val path = Path.of(args[0])
 
-    val output: List<String>
-    val outputPath: String
     when {
         path.isDirectory() -> {
-            val translator = VmTranslator(true)
-            path.listDirectoryEntries().filter { file -> file.extension == "vm" }.forEach { file ->
-                translator.translate(readFile(file.toString()), file.nameWithoutExtension)
+            path.listDirectoryEntries().filter { file -> file.extension == "jack" }.forEach { file ->
+                compileJack(readFile(file.toString()), file.toAbsolutePath())
             }
-            output = translator.getFullCode()
-            outputPath = "$path/${path.fileName}.asm"
+            translateVmFiles(path)
         }
         else -> {
             val code = readFile(path.toString())
             when (path.extension) {
                 "asm" -> {
-                    output = Assembler().assemble(code)
-                    outputPath = path.toString().replaceAfter(".", "hack")
+                    writeFile(
+                        Assembler().assemble(code),
+                        path.toString().replaceAfter(".", "hack")
+                    )
                 }
                 "vm" -> {
-                    output = VmTranslator().translate(code, path.nameWithoutExtension)
-                    outputPath = path.toString().replaceAfter(".", "asm")
+                    writeFile(
+                        VmTranslator().translate(code, path.nameWithoutExtension),
+                        path.toString().replaceAfter(".", "asm")
+                    )
                 }
                 "jack" -> {
-                    val analyzer = Analyzer(Tokenizer().tokenize(code))
-                    val dsl = VmDSL()
-                    analyzer.analyze().compileToVm(dsl, SymbolTable())
-                    output = dsl.code
-                    outputPath = path.toString().replaceAfter(".", "vm")
-                }
-                else -> {
-                    throw Exception("Unknown filetype")
+                    compileJack(code, path)
                 }
             }
         }
     }
-    if (outputPath.isNotEmpty()) {
-        writeFile(output, outputPath)
+}
+
+@ExperimentalPathApi
+private fun translateVmFiles(path: Path) {
+    val translator = VmTranslator(true)
+    path.listDirectoryEntries().filter { file -> file.extension == "vm" }.forEach { file ->
+        translator.translate(readFile(file.toString()), file.nameWithoutExtension)
     }
+    writeFile(
+        translator.getFullCode(),
+        "$path/${path.fileName}.asm"
+    )
+}
+
+fun compileJack(code: List<String>, path: Path) {
+    val analyzer = Analyzer(Tokenizer().tokenize(code))
+    val dsl = VmDSL()
+    analyzer.analyze().compileToVm(dsl, SymbolTable())
+    val output = dsl.code
+    val outputPath = path.toString().replaceAfter(".", "vm")
+    writeFile(output, outputPath)
 }
 
 fun readFile(path: String): List<String> {

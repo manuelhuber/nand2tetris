@@ -39,6 +39,7 @@ class KeywordTerm(val value: Keyword) : Term() {
             }
             Keyword.FALSE -> push(CONSTANT, 0)
             Keyword.NULL -> push(CONSTANT, 0)
+            Keyword.THIS -> push(POINTER, 0)
             else -> Unit
         }
     }

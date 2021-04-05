@@ -12,12 +12,12 @@ class SymbolTable(val parent: SymbolTable? = null) {
     }
 
     fun lookup(name: String): VmVariable? {
-        var cur: HashMap<String, VmVariable>? = variables
+        var cur: SymbolTable? = this
         while (cur != null) {
-            if (cur.containsKey(name)) {
-                return cur[name]
+            if (cur.variables.containsKey(name)) {
+                return cur.variables[name]
             }
-            cur = parent?.variables
+            cur = cur.parent
         }
         return null
     }
