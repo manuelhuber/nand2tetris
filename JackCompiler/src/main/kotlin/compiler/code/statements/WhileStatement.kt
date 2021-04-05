@@ -1,6 +1,6 @@
 package compiler.code.statements
 
-import compiler.JackAnalyizerDSL
+import compiler.JackAnalyzerDSL
 import compiler.code.SymbolTable
 import compiler.code.VmDSL
 import utils.Keyword
@@ -9,12 +9,12 @@ import compiler.code.expressions.Expression
 import compiler.code.expressions.compileExpression
 
 class WhileStatement(var condition: Expression, var statements: Statements) : Statement() {
-    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+    override fun VmDSL.addVmCode(symbols: SymbolTable) {
         TODO("Not yet implemented")
     }
 }
 
-fun JackAnalyizerDSL.compileWhileStatement(): WhileStatement {
+fun JackAnalyzerDSL.compileWhileStatement(): WhileStatement {
     return inTag("whileStatement") {
         consumeKeyword(Keyword.WHILE)
         consumeSymbol(Symbol.ROUND_BRACKET_OPEN)

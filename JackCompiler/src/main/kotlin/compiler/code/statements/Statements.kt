@@ -1,6 +1,6 @@
 package compiler.code.statements
 
-import compiler.JackAnalyizerDSL
+import compiler.JackAnalyzerDSL
 import compiler.NotAStatement
 import compiler.code.JackCode
 import compiler.code.SymbolTable
@@ -9,14 +9,16 @@ import compiler.tokenizer.KeywordToken
 import utils.Keyword
 
 class Statements(val statements: List<Statement>) : JackCode() {
-    override fun VmDSL.toVmCode(symbols: SymbolTable) {
-        TODO("Not yet implemented")
+    override fun VmDSL.addVmCode(symbols: SymbolTable) {
+        statements.forEach { statement ->
+            statement.compileToVm(this, symbols)
+        }
     }
 }
 
 abstract class Statement : JackCode()
 
-fun JackAnalyizerDSL.compileStatements(): Statements {
+fun JackAnalyzerDSL.compileStatements(): Statements {
     return inTag("statements") {
         val statements = mutableListOf<Statement>()
         var moreStatements = true
@@ -31,7 +33,7 @@ fun JackAnalyizerDSL.compileStatements(): Statements {
     }
 }
 
-fun JackAnalyizerDSL.compileStatement(): Statement {
+fun JackAnalyzerDSL.compileStatement(): Statement {
     val next = peak()
     if (next !is KeywordToken) throw  NotAStatement("Unexpected token $next")
     return when (next.keyword) {

@@ -16,7 +16,7 @@ const val That = "THAT"
 const val R13 = "13"
 const val R14 = "14"
 
-enum class VmOperators(val value: String) {
+enum class VmOperator(val value: String) {
     Push("push"),
     Pop("pop"),
     Add("add"),
@@ -33,7 +33,12 @@ enum class VmOperators(val value: String) {
     IfGoto("if-goto"),
     Function("function"),
     Call("call"),
-    Return("return"),
+    Return("return");
+
+    override fun toString(): String {
+        return value
+    }
+
 }
 
 

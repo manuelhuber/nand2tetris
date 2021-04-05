@@ -1,7 +1,7 @@
 package compiler.code.expressions
 
 import testCompilation
-import compiler.JackAnalyizerDSL
+import compiler.JackAnalyzerDSL
 import utils.Operator
 import utils.UnaryOperator
 import compiler.tokenizer.IntegerConstantToken
@@ -12,14 +12,14 @@ import kotlin.test.assertEquals
 internal class TermCompilerTest {
     @Test
     fun testArrayTerm() {
-        val term = testCompilation("foo[1]", JackAnalyizerDSL::compileTerm)
+        val term = testCompilation("foo[1]", JackAnalyzerDSL::compileTerm)
         assertEquals((term as ArrayVarNameTerm).value, "foo")
         assertEquals((term.ex.term as IntegerTerm).value, 1)
     }
 
     @Test
     fun testUnaryExpressionTerm() {
-        val term = testCompilation("-(4 + 3 * 10)", JackAnalyizerDSL::compileTerm)
+        val term = testCompilation("-(4 + 3 * 10)", JackAnalyzerDSL::compileTerm)
         assertEquals((term as UnaryTerm).operator, UnaryOperator.MINUS)
         assertEquals(((term.term as ExpressionTerm).value.term as IntegerTerm).value, 4)
 
@@ -37,7 +37,7 @@ internal class TermCompilerTest {
     @Test
     fun testExpectedIdentifier() {
         val exception = assertThrows<Exception> {
-            testCompilation("MyClass.1function()", JackAnalyizerDSL::compileTerm)
+            testCompilation("MyClass.1function()", JackAnalyzerDSL::compileTerm)
         }
         assertEquals(
             exception.message,

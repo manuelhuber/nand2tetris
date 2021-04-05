@@ -1,7 +1,7 @@
 package vmTranslator
 
 import utils.*
-import utils.VmOperators.*
+import utils.VmOperator.*
 import utils.VmStack.*
 import utils.isCode
 
@@ -60,7 +60,7 @@ class VmTranslator() {
             Label.value -> translateLabel(tokens)
             Goto.value -> translateGoto(tokens)
             IfGoto.value -> translateConditionalGoto(tokens)
-            VmOperators.Function.value -> translateFunctionDeclaration(tokens)
+            VmOperator.Function.value -> translateFunctionDeclaration(tokens)
             Call.value -> translateFunctionCall(tokens)
             Return.value -> translateReturn()
         }

@@ -1,12 +1,12 @@
 package compiler.code.programStructure
 
 import compiler.CompilationError
-import compiler.JackAnalyizerDSL
+import compiler.JackAnalyzerDSL
 import utils.Keyword
 import compiler.tokenizer.IdentifierToken
 import compiler.tokenizer.KeywordToken
 
-fun JackAnalyizerDSL.compileType(): String {
+fun JackAnalyzerDSL.compileType(): String {
     return when (val typeToken = consumeToken()) {
         is IdentifierToken -> typeToken.value
         is KeywordToken -> {

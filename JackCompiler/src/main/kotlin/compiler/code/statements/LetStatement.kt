@@ -1,6 +1,6 @@
 package compiler.code.statements
 
-import compiler.JackAnalyizerDSL
+import compiler.JackAnalyzerDSL
 import compiler.code.SymbolTable
 import compiler.code.VmDSL
 import utils.Keyword
@@ -12,12 +12,12 @@ import compiler.tokenizer.isA
 class LetStatement(
     val varName: String, val expression: Expression, val indexExpression: Expression? = null
 ) : Statement() {
-    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+    override fun VmDSL.addVmCode(symbols: SymbolTable) {
         TODO("Not yet implemented")
     }
 }
 
-fun JackAnalyizerDSL.compileLetStatement(): LetStatement {
+fun JackAnalyzerDSL.compileLetStatement(): LetStatement {
     return inTag("letStatement") {
 
         consumeKeyword(Keyword.LET)

@@ -1,21 +1,20 @@
 package compiler.code
 
+import utils.VmOperator
 import utils.VmStack
 
 abstract class JackCode {
-    abstract fun VmDSL.toVmCode(symbols: SymbolTable)
+    abstract fun VmDSL.addVmCode(symbols: SymbolTable)
 
-    fun toVmCodeX(dsl: VmDSL, symbols: SymbolTable) {
-        this.run { dsl.toVmCode(symbols) }
-    }
+    fun compileToVm(dsl: VmDSL, symbols: SymbolTable) = run { dsl.addVmCode(symbols) }
 }
 
 fun tag(tag: String): (String) -> String {
     return { content: String -> "<$tag> $content </$tag>" }
 }
 
-class VmDSL() {
-    private val code = mutableListOf<String>()
+class VmDSL {
+    val code = mutableListOf<String>()
 
     fun push(variable: VmVariable?) {
         if (variable == null) throw Exception()
@@ -28,6 +27,14 @@ class VmDSL() {
 
     fun pop(stack: VmStack, index: Int) {
         code.add("pop $stack $index")
+    }
+
+    fun call(function: String, argCount: Int) {
+        code.add("call $function $argCount")
+    }
+
+    fun add(op: VmOperator) {
+        add(op.value)
     }
 
     fun add(s: String) {

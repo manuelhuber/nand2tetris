@@ -1,6 +1,6 @@
 package compiler.code.statements
 
-import compiler.JackAnalyizerDSL
+import compiler.JackAnalyzerDSL
 import compiler.code.SymbolTable
 import compiler.code.VmDSL
 import utils.Keyword
@@ -12,12 +12,12 @@ import compiler.tokenizer.isA
 class IfStatement(
     val condition: Expression, val trueStatements: Statements, val falseStatements: Statements? = null
 ) : Statement() {
-    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+    override fun VmDSL.addVmCode(symbols: SymbolTable) {
         TODO("Not yet implemented")
     }
 }
 
-fun JackAnalyizerDSL.compileIfStatement(): IfStatement {
+fun JackAnalyzerDSL.compileIfStatement(): IfStatement {
     return inTag("ifStatement") {
 
         consumeKeyword(Keyword.IF)

@@ -3,8 +3,8 @@ package utils
 enum class Keyword(val value: String) {
     CLASS("class"),
     CONSTRUCTOR("constructor"),
-    FUNCTION("function"),
-    METHOD("method"),
+    FUNCTION("function"), // this is a static function
+    METHOD("method"), // this is called on an object instance
     FIELD("field"),
     STATIC("static"),
     VAR("var"),

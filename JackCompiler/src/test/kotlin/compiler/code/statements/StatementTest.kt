@@ -1,6 +1,6 @@
 package compiler.code.statements
 
-import compiler.JackAnalyizerDSL
+import compiler.JackAnalyzerDSL
 import utils.Operator
 import compiler.code.expressions.IntegerTerm
 import compiler.code.expressions.VarNameTerm
@@ -23,7 +23,7 @@ internal class StatementTest {
                   let x = x + 1;
                }
             }
-        """.trimIndent(), JackAnalyizerDSL::compileWhileStatement
+        """.trimIndent(), JackAnalyzerDSL::compileWhileStatement
         )
         assertEquals((whileStatement.condition.term as VarNameTerm).value, "x")
         assertEquals(whileStatement.condition.terms[0].first, Operator.GREATER_THAN)

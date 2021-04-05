@@ -1,21 +1,69 @@
 package compiler.code.programStructure
 
-import compiler.JackAnalyizerDSL
+import compiler.JackAnalyzerDSL
+import compiler.code.JackCode
+import compiler.code.SymbolTable
+import compiler.code.VmDSL
+import compiler.code.VmVariable
+import compiler.tokenizer.IdentifierToken
+import compiler.tokenizer.isA
 import utils.Keyword
 import utils.Symbol
-import compiler.tokenizer.IdentifierToken
-import compiler.tokenizer.KeywordToken
-import compiler.tokenizer.isA
+import utils.VmOperator
+import utils.VmStack
 
 class SubroutineDec(
-    functionType: KeywordToken,
-    returnType: String,
-    functionName: IdentifierToken,
-    params: ParameterList,
-    body: SubroutineBody
-)
+    val functionType: Keyword,
+    val returnType: String,
+    val functionName: IdentifierToken,
+    val params: ParameterList,
+    val body: SubroutineBody
+) : JackCode() {
 
-fun JackAnalyizerDSL.compileSubroutineDec(): SubroutineDec {
+    private lateinit var className: String
+
+    private fun isMethod() = functionType == Keyword.METHOD
+
+    fun setClassName(s: String) {
+        this.className = s
+    }
+
+    override fun VmDSL.addVmCode(symbols: SymbolTable) {
+        initializeSymbols(symbols)
+
+        add("${VmOperator.Function} $className.$functionName ${body.varDecs.count()}")
+
+        if (isMethod()) {
+            // set THIS
+            push(VmStack.ARGUMENT, 0)
+            pop(VmStack.POINTER, 0)
+        }
+
+        body.compileToVm(this, symbols)
+    }
+
+    private fun initializeSymbols(symbols: SymbolTable) {
+        // ARGS
+        var argsIndex = 0
+        if (isMethod()) {
+            symbols.add("this", VmVariable("", VmStack.ARGUMENT, argsIndex++))
+        }
+        params.pars.forEach { parameter ->
+            symbols.add(parameter.identifier, VmVariable(parameter.type, VmStack.ARGUMENT, argsIndex++))
+        }
+
+        // LOCAL
+        var localVarIndex = 0
+        body.varDecs.forEach { varDec ->
+            varDec.names.forEach {
+                symbols.add(it, VmVariable(varDec.type, VmStack.LOCAL, localVarIndex++))
+            }
+        }
+    }
+
+}
+
+fun JackAnalyzerDSL.compileSubroutineDec(): SubroutineDec {
     return inTag("subroutineDec") {
         val functionType = consumeKeyword(listOf(Keyword.CONSTRUCTOR, Keyword.FUNCTION, Keyword.METHOD))
         val returnType = if (peak().isA(Keyword.VOID)) {
@@ -30,6 +78,6 @@ fun JackAnalyizerDSL.compileSubroutineDec(): SubroutineDec {
         consumeSymbol(Symbol.ROUND_BRACKET_CLOSE)
 
         val body = compileSubroutineBody()
-        SubroutineDec(functionType, returnType, functionName, params, body)
+        SubroutineDec(functionType.keyword, returnType, functionName, params, body)
     }
 }

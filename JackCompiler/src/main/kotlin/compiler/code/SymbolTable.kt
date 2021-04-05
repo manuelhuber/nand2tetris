@@ -7,7 +7,11 @@ class SymbolTable(val parent: SymbolTable? = null) {
 
     private val variables = hashMapOf<String, VmVariable>()
 
-    public fun lookup(name: String): VmVariable? {
+    fun add(name: String, variable: VmVariable) {
+        variables[name] = variable
+    }
+
+    fun lookup(name: String): VmVariable? {
         var cur: HashMap<String, VmVariable>? = variables
         while (cur != null) {
             if (cur.containsKey(name)) {

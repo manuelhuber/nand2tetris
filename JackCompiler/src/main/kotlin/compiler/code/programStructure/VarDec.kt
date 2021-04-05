@@ -1,13 +1,13 @@
 package compiler.code.programStructure
 
-import compiler.JackAnalyizerDSL
+import compiler.JackAnalyzerDSL
 import utils.Keyword
 import utils.Symbol
 import compiler.tokenizer.isA
 
 class VarDec(val type: String, val names: List<String>)
 
-fun JackAnalyizerDSL.compileVarDec(): VarDec {
+fun JackAnalyzerDSL.compileVarDec(): VarDec {
     return inTag("varDec") {
         consumeKeyword(Keyword.VAR)
         val type = compileType()

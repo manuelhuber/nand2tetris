@@ -1,17 +1,22 @@
 package compiler.code.programStructure
 
-import compiler.JackAnalyizerDSL
-import utils.Symbol
+import compiler.JackAnalyzerDSL
 import compiler.tokenizer.isA
+import utils.Symbol
 
-class ParameterList(val pars: List<Pair<String, String>>)
+class Parameter(val type: String, val identifier: String)
+class ParameterList(val pars: List<Parameter>) {
+    fun count(): Int {
+        return pars.count()
+    }
+}
 
-fun JackAnalyizerDSL.compileParameterList(): ParameterList {
+fun JackAnalyzerDSL.compileParameterList(): ParameterList {
     return inTag("parameterList") {
-        val pars = mutableListOf<Pair<String, String>>()
+        val pars = mutableListOf<Parameter>()
         while (!peak().isA(Symbol.ROUND_BRACKET_CLOSE)) {
             consumeSymbol(Symbol.COMMA)
-            pars.add(Pair(compileType(), consumeIdentifier().value))
+            pars.add(Parameter(compileType(), consumeIdentifier().value))
         }
         ParameterList(pars)
     }
