@@ -195,14 +195,14 @@ class VmTranslator() {
 
             // it's false
             addressPointer(StackPointer)
-            setMemory("0")
+            setMemory("0") // FALSE
             address(continueLabel)
             jump()
 
             // it's true
             addLabel(trueLabel)
             addressPointer(StackPointer)
-            setMemory("-1")
+            setMemory("-1") // TRUE
 
             // done
             addLabel(continueLabel)

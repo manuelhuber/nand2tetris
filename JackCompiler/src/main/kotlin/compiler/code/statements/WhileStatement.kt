@@ -3,14 +3,27 @@ package compiler.code.statements
 import compiler.JackAnalyzerDSL
 import compiler.code.SymbolTable
 import compiler.code.VmDSL
-import utils.Keyword
-import utils.Symbol
 import compiler.code.expressions.Expression
 import compiler.code.expressions.compileExpression
+import utils.Keyword
+import utils.Symbol
+import utils.VmOperator
 
 class WhileStatement(var condition: Expression, var statements: Statements) : Statement() {
     override fun VmDSL.addVmCode(symbols: SymbolTable) {
-        TODO("Not yet implemented")
+        val id = getUniqueNumber()
+        val startLabel = "start$id"
+        val endLabel = "end$id"
+
+        label(startLabel)
+        condition.compileToVm(this, symbols)
+        add(VmOperator.Not)
+        ifGoto(endLabel)
+
+        statements.compileToVm(this, symbols)
+
+        goto(startLabel)
+        label(endLabel)
     }
 }
 

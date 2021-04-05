@@ -23,6 +23,7 @@ class SubroutineDec(
     private lateinit var className: String
 
     private fun isMethod() = functionType == Keyword.METHOD
+    private fun isConstructor() = functionType == Keyword.CONSTRUCTOR
 
     fun setClassName(s: String) {
         this.className = s
@@ -31,11 +32,18 @@ class SubroutineDec(
     override fun VmDSL.addVmCode(symbols: SymbolTable) {
         initializeSymbols(symbols)
 
-        add("${VmOperator.Function} $className.$functionName ${body.varDecs.count()}")
+        val localVarCount = body.varDecs.flatMap(VarDec::names).count()
+        add("${VmOperator.Function} $className.${functionName.value} $localVarCount")
 
         if (isMethod()) {
             // set THIS
             push(VmStack.ARGUMENT, 0)
+            pop(VmStack.POINTER, 0)
+        }
+
+        if (isConstructor()) {
+            push(VmStack.CONSTANT, localVarCount)
+            call("Memory.alloc", 1)
             pop(VmStack.POINTER, 0)
         }
 

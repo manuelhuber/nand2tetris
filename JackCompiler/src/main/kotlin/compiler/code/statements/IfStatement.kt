@@ -3,17 +3,28 @@ package compiler.code.statements
 import compiler.JackAnalyzerDSL
 import compiler.code.SymbolTable
 import compiler.code.VmDSL
-import utils.Keyword
-import utils.Symbol
 import compiler.code.expressions.Expression
 import compiler.code.expressions.compileExpression
 import compiler.tokenizer.isA
+import utils.Keyword
+import utils.Symbol
 
 class IfStatement(
     val condition: Expression, val trueStatements: Statements, val falseStatements: Statements? = null
 ) : Statement() {
     override fun VmDSL.addVmCode(symbols: SymbolTable) {
-        TODO("Not yet implemented")
+        val id = getUniqueNumber()
+        val trueLabel = "true$id"
+        val endLabel = "end$id"
+
+        condition.compileToVm(this, symbols)
+        ifGoto(trueLabel)
+        falseStatements?.compileToVm(this, symbols)
+        goto(endLabel)
+        label(trueLabel)
+        trueStatements.compileToVm(this, symbols)
+        label(endLabel)
+
     }
 }
 

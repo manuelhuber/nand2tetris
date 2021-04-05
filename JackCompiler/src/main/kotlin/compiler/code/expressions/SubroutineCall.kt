@@ -15,7 +15,8 @@ class SubroutineCall(val functionName: String, val args: ExpressionList, val tar
             push(symbols.lookup(targetName!!))
         }
         args.compileToVm(this, symbols)
-        call(functionName, args.count() + if (isMethodCall) 1 else 0)
+        var name = if (targetName == null) functionName else "$targetName.$functionName"
+        call(name, args.count() + if (isMethodCall) 1 else 0)
     }
 }
 

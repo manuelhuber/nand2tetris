@@ -25,14 +25,22 @@ class StringTerm(val value: String) : Term() {
         call("String.new", 1)
         value.forEach { c ->
             push(CONSTANT, c.toInt())
-            call("String.appendChar", 1)
+            call("String.appendChar", 2)
         }
     }
 }
 
 class KeywordTerm(val value: Keyword) : Term() {
     override fun VmDSL.addVmCode(symbols: SymbolTable) {
-        // Nothing to do
+        when (value) {
+            Keyword.TRUE -> {
+                push(CONSTANT, 1)
+                add(VmOperator.Neg)
+            }
+            Keyword.FALSE -> push(CONSTANT, 0)
+            Keyword.NULL -> push(CONSTANT, 0)
+            else -> Unit
+        }
     }
 }
 

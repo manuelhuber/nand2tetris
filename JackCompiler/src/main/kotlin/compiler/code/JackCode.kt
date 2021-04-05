@@ -14,6 +14,12 @@ fun tag(tag: String): (String) -> String {
 }
 
 class VmDSL {
+    var counter = 0
+
+    fun getUniqueNumber(): Int {
+        return counter++
+    }
+
     val code = mutableListOf<String>()
 
     fun push(variable: VmVariable?) {
@@ -22,15 +28,32 @@ class VmDSL {
     }
 
     fun push(stack: VmStack, index: Int) {
-        code.add("push $stack $index")
+        add("push $stack $index")
+    }
+
+    fun pop(variable: VmVariable?) {
+        if (variable == null) throw Exception()
+        pop(variable.stack, variable.index)
     }
 
     fun pop(stack: VmStack, index: Int) {
-        code.add("pop $stack $index")
+        add("pop $stack $index")
     }
 
     fun call(function: String, argCount: Int) {
-        code.add("call $function $argCount")
+        add("call $function $argCount")
+    }
+
+    fun ifGoto(labelName: String) {
+        add("if-goto $labelName")
+    }
+
+    fun goto(labelName: String) {
+        add("goto $labelName")
+    }
+
+    fun label(labelName: String) {
+        add("label $labelName")
     }
 
     fun add(op: VmOperator) {

@@ -1,5 +1,7 @@
 import assembler.Assembler
 import compiler.Analyzer
+import compiler.code.SymbolTable
+import compiler.code.VmDSL
 import compiler.tokenizer.Tokenizer
 import vmTranslator.VmTranslator
 import java.io.File
@@ -34,9 +36,10 @@ fun main(args: Array<String>) {
                 }
                 "jack" -> {
                     val analyzer = Analyzer(Tokenizer().tokenize(code))
-                    analyzer.analyze()
-                    output = analyzer.jack.compiledCodeAsXML
-                    outputPath = path.toString().replaceAfter(".", "tokens.xml")
+                    val dsl = VmDSL()
+                    analyzer.analyze().compileToVm(dsl, SymbolTable())
+                    output = dsl.code
+                    outputPath = path.toString().replaceAfter(".", "vm")
                 }
                 else -> {
                     throw Exception("Unknown filetype")
