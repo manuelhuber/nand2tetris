@@ -1,9 +1,9 @@
 package compiler.tokenizer
 
-import compiler.KEYWORDS
-import compiler.Keyword
-import compiler.SYMBOLS
-import compiler.Symbol
+import utils.KEYWORDS
+import utils.Keyword
+import utils.SYMBOLS
+import utils.Symbol
 import utils.isCode
 
 class Tokenizer {

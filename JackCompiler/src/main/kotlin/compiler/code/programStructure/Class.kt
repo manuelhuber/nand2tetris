@@ -1,13 +1,13 @@
-package compiler.programStructure
+package compiler.code.programStructure
 
-import compiler.JackDSL
-import compiler.Keyword
-import compiler.Symbol
+import compiler.JackAnalyizerDSL
+import utils.Keyword
+import utils.Symbol
 import compiler.tokenizer.isA
 
 class Class(val name: String, val vars: List<ClassVarDec>, val subroutines: List<SubroutineDec>)
 
-fun JackDSL.compileClass(): Class {
+fun JackAnalyizerDSL.compileClass(): Class {
     return inTag("class") {
         consumeKeyword(Keyword.CLASS)
         val name = consumeIdentifier().value

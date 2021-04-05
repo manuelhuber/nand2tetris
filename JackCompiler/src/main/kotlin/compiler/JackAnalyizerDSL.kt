@@ -4,14 +4,16 @@ import compiler.tokenizer.IdentifierToken
 import compiler.tokenizer.KeywordToken
 import compiler.tokenizer.SymbolToken
 import compiler.tokenizer.Token
+import utils.Keyword
+import utils.Symbol
 
-class JackDSL(private val tokens: List<Token>) {
+class JackAnalyizerDSL(private val tokens: List<Token>) {
     private var index = 0
     val compiledCodeAsXML = mutableListOf<String>()
     var indentationLevel: Int = 0
 
     // this is just a hacky addon to build the XML the course wants
-    fun <T> inTag(tag: String, foo: JackDSL.() -> T): T {
+    fun <T> inTag(tag: String, foo: JackAnalyizerDSL.() -> T): T {
         val indentation = "\t".repeat(indentationLevel)
         compiledCodeAsXML.add("$indentation<$tag> ")
         indentationLevel++
@@ -76,7 +78,7 @@ class JackDSL(private val tokens: List<Token>) {
         compiledCodeAsXML.removeLast()
     }
 
-    fun <T> analyze(x: JackDSL.() -> T): T {
+    fun <T> analyze(x: JackAnalyizerDSL.() -> T): T {
         return this.x()
     }
 

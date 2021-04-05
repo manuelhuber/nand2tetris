@@ -1,11 +1,11 @@
-package compiler.programStructure
+package compiler.code.programStructure
 
-import compiler.JackDSL
-import compiler.Keyword
+import compiler.JackAnalyizerDSL
+import utils.Keyword
 
 class ClassVarDec(val fieldType: Keyword, val varDec: VarDec)
 
-fun JackDSL.compileClassVarDec(): ClassVarDec {
+fun JackAnalyizerDSL.compileClassVarDec(): ClassVarDec {
     return inTag("classVarDec") {
         val type = consumeKeyword(listOf(Keyword.STATIC, Keyword.FIELD)).keyword
         ClassVarDec(type, compileVarDec())

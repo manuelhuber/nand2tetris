@@ -1,7 +1,7 @@
 package compiler.tokenizer
 
-import compiler.Keyword
-import compiler.Symbol
+import utils.Keyword
+import utils.Symbol
 
 sealed class Token(val value: String) {
 

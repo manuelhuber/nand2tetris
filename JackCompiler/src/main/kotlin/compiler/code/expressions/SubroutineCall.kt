@@ -1,17 +1,22 @@
-package compiler.expressions
+package compiler.code.expressions
 
 import compiler.CompilationError
-import compiler.JackDSL
-import compiler.Symbol
+import compiler.JackAnalyizerDSL
+import utils.Symbol
+import compiler.code.JackCode
+import compiler.code.SymbolTable
+import compiler.code.VmDSL
 import compiler.tokenizer.SymbolToken
 
-class SubroutineCall(val functionName: String, val args: ExpressionList, val targetName: String? = null) {
-    override fun toString(): String {
-        return "SubroutineCall(functionName='$functionName', args=$args, targetName=$targetName)"
+class SubroutineCall(val functionName: String, val args: ExpressionList, val targetName: String? = null) : JackCode() {
+    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+        if (targetName != null) {
+            push(symbols.lookup(targetName))
+        }
     }
 }
 
-fun JackDSL.compileSubroutineCall(): SubroutineCall {
+fun JackAnalyizerDSL.compileSubroutineCall(): SubroutineCall {
     val identifier = consumeIdentifier()
     val symbol = peak()
     if (symbol !is SymbolToken) {
@@ -34,7 +39,7 @@ fun JackDSL.compileSubroutineCall(): SubroutineCall {
     }
 }
 
-fun JackDSL.compileArgsList(): ExpressionList {
+fun JackAnalyizerDSL.compileArgsList(): ExpressionList {
     consumeSymbol(Symbol.ROUND_BRACKET_OPEN)
     val peak = peak()
     val expressionList =

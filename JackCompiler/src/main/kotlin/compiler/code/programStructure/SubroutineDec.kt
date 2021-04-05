@@ -1,8 +1,8 @@
-package compiler.programStructure
+package compiler.code.programStructure
 
-import compiler.JackDSL
-import compiler.Keyword
-import compiler.Symbol
+import compiler.JackAnalyizerDSL
+import utils.Keyword
+import utils.Symbol
 import compiler.tokenizer.IdentifierToken
 import compiler.tokenizer.KeywordToken
 import compiler.tokenizer.isA
@@ -15,7 +15,7 @@ class SubroutineDec(
     body: SubroutineBody
 )
 
-fun JackDSL.compileSubroutineDec(): SubroutineDec {
+fun JackAnalyizerDSL.compileSubroutineDec(): SubroutineDec {
     return inTag("subroutineDec") {
         val functionType = consumeKeyword(listOf(Keyword.CONSTRUCTOR, Keyword.FUNCTION, Keyword.METHOD))
         val returnType = if (peak().isA(Keyword.VOID)) {

@@ -1,11 +1,14 @@
 package vmTranslator
 
+import utils.*
+import utils.VmOperators.*
+import utils.VmStack.*
 import utils.isCode
 
 class VmTranslator() {
     private var staticIdentifier: String = "MAIN"
     private var assembly = AssemblyDsl()
-    private var counter = 0;
+    private var counter = 0
     private val savedFrame = listOf(Local, Argument, This, That)
 
     constructor(bootstrap: Boolean) : this() {
@@ -25,7 +28,7 @@ class VmTranslator() {
     }
 
     private fun getCounterAndIncrement(): Int {
-        return counter++;
+        return counter++
     }
 
     fun getFullCode(): MutableList<String> {
@@ -43,23 +46,23 @@ class VmTranslator() {
         val tokens = line.split(' ')
         val operation = tokens[0]
         when (operation) {
-            "push" -> translatePush(tokens)
-            "pop" -> translatePop(tokens)
-            "add" -> translateBasicTwoTermOperation("+")
-            "sub" -> translateBasicTwoTermOperation("-")
-            "and" -> translateBasicTwoTermOperation("&")
-            "or" -> translateBasicTwoTermOperation("|")
-            "neg" -> translateBasicSingleTermOperation("-")
-            "not" -> translateBasicSingleTermOperation("!")
-            "gt" -> translateComparison(Jump.IfGreater)
-            "lt" -> translateComparison(Jump.IfLess)
-            "eq" -> translateComparison(Jump.IfEqual)
-            "label" -> translateLabel(tokens)
-            "goto" -> translateGoto(tokens)
-            "if-goto" -> translateConditionalGoto(tokens)
-            "function" -> translateFunctionDeclaration(tokens)
-            "call" -> translateFunctionCall(tokens)
-            "return" -> translateReturn()
+            Push.value -> translatePush(tokens)
+            Pop.value -> translatePop(tokens)
+            Add.value -> translateBasicTwoTermOperation("+")
+            Sub.value -> translateBasicTwoTermOperation("-")
+            And.value -> translateBasicTwoTermOperation("&")
+            Or.value -> translateBasicTwoTermOperation("|")
+            Neg.value -> translateBasicSingleTermOperation("-")
+            Not.value -> translateBasicSingleTermOperation("!")
+            Gt.value -> translateComparison(Jump.IfGreater)
+            Lt.value -> translateComparison(Jump.IfLess)
+            Eq.value -> translateComparison(Jump.IfEqual)
+            Label.value -> translateLabel(tokens)
+            Goto.value -> translateGoto(tokens)
+            IfGoto.value -> translateConditionalGoto(tokens)
+            VmOperators.Function.value -> translateFunctionDeclaration(tokens)
+            Call.value -> translateFunctionCall(tokens)
+            Return.value -> translateReturn()
         }
     }
 
@@ -69,27 +72,27 @@ class VmTranslator() {
         assembly.addCode {
             // Set data
             when (stack) {
-                "constant" -> {
+                CONSTANT.VmValue -> {
                     address(number)
                     setData(Address)
                 }
-                "static" -> {
+                STATIC.VmValue -> {
                     address("$staticIdentifier.$number")
                     setData(Memory)
                 }
-                "pointer" -> {
+                POINTER.VmValue -> {
                     address(if (number == "0") This else That)
                     setData(Memory)
                 }
-                "temp" -> {
+                TEMP.VmValue -> {
                     addressTmp(number.toInt())
                     setData(Memory)
                 }
                 else -> {
-                    val base = stackTable[stack]
+                    val base = VmStack.fromValue(stack)!!.assemblyValue!!
                     address(number)
                     setData(Address)
-                    address(base!!)
+                    address(base)
                     setAddress("$Data+$Memory")
                     setData(Memory)
                 }
@@ -105,7 +108,7 @@ class VmTranslator() {
         val stack = tokens[1]
         val number = tokens[2]
 
-        val baseAddress = stackTable[stack]
+        val baseAddress = VmStack.fromValue(stack)?.assemblyValue
         if (baseAddress != null) {
             return popToGenericLocation(baseAddress, number)
         }
@@ -115,15 +118,15 @@ class VmTranslator() {
             addressPointer(StackPointer)
             setData(Memory)
             when (stack) {
-                "static" -> {
+                STATIC.VmValue -> {
                     address("$staticIdentifier.$number")
                     setMemory(Data)
                 }
-                "temp" -> {
+                TEMP.VmValue -> {
                     addressTmp(number.toInt())
                     setMemory(Data)
                 }
-                "pointer" -> {
+                POINTER.VmValue -> {
                     address(if (number == "0") This else That)
                     setMemory(Data)
                 }

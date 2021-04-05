@@ -1,4 +1,4 @@
-package compiler
+package utils
 
 enum class Keyword(val value: String) {
     CLASS("class"),

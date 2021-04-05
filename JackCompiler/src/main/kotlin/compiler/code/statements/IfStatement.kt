@@ -1,17 +1,23 @@
-package compiler.statements
+package compiler.code.statements
 
-import compiler.JackDSL
-import compiler.Keyword
-import compiler.Symbol
-import compiler.expressions.Expression
-import compiler.expressions.compileExpression
+import compiler.JackAnalyizerDSL
+import compiler.code.SymbolTable
+import compiler.code.VmDSL
+import utils.Keyword
+import utils.Symbol
+import compiler.code.expressions.Expression
+import compiler.code.expressions.compileExpression
 import compiler.tokenizer.isA
 
 class IfStatement(
     val condition: Expression, val trueStatements: Statements, val falseStatements: Statements? = null
-) : Statement()
+) : Statement() {
+    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+        TODO("Not yet implemented")
+    }
+}
 
-fun JackDSL.compileIfStatement(): IfStatement {
+fun JackAnalyizerDSL.compileIfStatement(): IfStatement {
     return inTag("ifStatement") {
 
         consumeKeyword(Keyword.IF)

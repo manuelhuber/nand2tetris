@@ -1,5 +1,6 @@
 package vmTranslator
 
+import utils.*
 
 class AssemblyDsl {
     val output = mutableListOf<String>()

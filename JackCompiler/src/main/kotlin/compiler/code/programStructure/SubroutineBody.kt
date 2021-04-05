@@ -1,15 +1,15 @@
-package compiler.programStructure
+package compiler.code.programStructure
 
-import compiler.JackDSL
-import compiler.Keyword
-import compiler.Symbol
-import compiler.statements.Statements
-import compiler.statements.compileStatements
+import compiler.JackAnalyizerDSL
+import utils.Keyword
+import utils.Symbol
+import compiler.code.statements.Statements
+import compiler.code.statements.compileStatements
 import compiler.tokenizer.isA
 
 class SubroutineBody(val varDecs: List<VarDec>, val statements: Statements)
 
-fun JackDSL.compileSubroutineBody(): SubroutineBody {
+fun JackAnalyizerDSL.compileSubroutineBody(): SubroutineBody {
     return inTag("subroutineBody") {
         consumeSymbol(Symbol.CURLY_BRACKET_OPEN)
         val varDec = mutableListOf<VarDec>()

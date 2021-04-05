@@ -1,62 +1,71 @@
-package compiler.expressions
+package compiler.code.expressions
 
-import compiler.*
+import compiler.CompilationError
+import compiler.JackAnalyizerDSL
+import compiler.code.JackCode
+import compiler.code.SymbolTable
+import compiler.code.VmDSL
 import compiler.tokenizer.*
+import utils.Keyword
+import utils.Symbol
+import utils.UNARY_OPERATORS
+import utils.UnaryOperator
+import utils.VmStack.CONSTANT
 
-sealed class Term
+sealed class Term : JackCode()
 
 class IntegerTerm(val value: Int) : Term() {
-    override fun toString(): String {
-        return "IntegerConstant(value=$value)"
+    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+        push(CONSTANT, value)
     }
 }
 
 class StringTerm(val value: String) : Term() {
-    override fun toString(): String {
-        return "StringConstant(value='$value')"
+    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+        TODO("Not yet implemented")
     }
 }
 
 class KeywordTerm(val value: Keyword) : Term() {
-    override fun toString(): String {
-        return "KeywordConstant(value='$value')"
+    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+        // Nothing to do
     }
 }
 
 class VarNameTerm(val value: String) : Term() {
-    override fun toString(): String {
-        return "VarName(value='$value')"
+    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+        TODO("Not yet implemented")
     }
 }
 
 class ArrayVarNameTerm(val value: String, val ex: Expression) : Term() {
-    override fun toString(): String {
-        return "ArrayVarName(value='$value', ex=$ex)"
+    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+        TODO("Not yet implemented")
     }
 }
 
 class ExpressionTerm(val value: Expression) : Term() {
-    override fun toString(): String {
-        return "ExpressionTerm(value=$value)"
+    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+        TODO("Not yet implemented")
     }
 }
 
 class UnaryTerm(val operator: UnaryOperator, val term: Term) : Term() {
-    override fun toString(): String {
-        return "UnaryTerm(operator=$operator, term=$term)"
+    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+        TODO("Not yet implemented")
     }
 }
 
 class SubroutineCallTerm(val subroutineCall: SubroutineCall) : Term() {
-    override fun toString(): String {
-        return "SubroutineCallTerm(subroutineCall=$subroutineCall)"
+    override fun VmDSL.toVmCode(symbols: SymbolTable) {
+        TODO("Not yet implemented")
     }
 }
 
 
 val validKeywordTerms = hashSetOf(Keyword.TRUE, Keyword.FALSE, Keyword.NULL, Keyword.THIS)
 
-fun JackDSL.compileTerm(): Term {
+fun JackAnalyizerDSL.compileTerm(): Term {
     return inTag("term") {
         val token = consumeToken()
         val value = token.value
@@ -73,7 +82,7 @@ fun JackDSL.compileTerm(): Term {
     }
 }
 
-private fun JackDSL.compileIdentifierToken(identifier: String): Term {
+private fun JackAnalyizerDSL.compileIdentifierToken(identifier: String): Term {
     val nextToken = peak()
     val basicVarNameTerm = VarNameTerm(identifier)
     return when {
@@ -92,7 +101,7 @@ private fun JackDSL.compileIdentifierToken(identifier: String): Term {
     }
 }
 
-private fun JackDSL.compileSymbolToken(token: SymbolToken): Term {
+private fun JackAnalyizerDSL.compileSymbolToken(token: SymbolToken): Term {
     return when {
         token.symbol == Symbol.ROUND_BRACKET_OPEN -> {
             val expression = compileExpression()

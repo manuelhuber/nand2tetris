@@ -1,12 +1,12 @@
-package compiler.expressions
+package compiler.code.expressions
 
-import compiler.JackDSL
-import compiler.Symbol
+import compiler.JackAnalyizerDSL
+import utils.Symbol
 import compiler.tokenizer.SymbolToken
 
 class ExpressionList(val expressions: List<Expression> = emptyList())
 
-fun JackDSL.compileExpressionList(): ExpressionList {
+fun JackAnalyizerDSL.compileExpressionList(): ExpressionList {
     return inTag("expressionList") {
         val list = mutableListOf(compileExpression())
         while (peak() is SymbolToken && peak().value[0] == Symbol.COMMA.value) {

@@ -1,9 +1,9 @@
-package compiler.statements
+package compiler.code.statements
 
-import compiler.JackDSL
-import compiler.Operator
-import compiler.expressions.IntegerTerm
-import compiler.expressions.VarNameTerm
+import compiler.JackAnalyizerDSL
+import utils.Operator
+import compiler.code.expressions.IntegerTerm
+import compiler.code.expressions.VarNameTerm
 import org.junit.Test
 import testCompilation
 import kotlin.test.assertEquals
@@ -23,7 +23,7 @@ internal class StatementTest {
                   let x = x + 1;
                }
             }
-        """.trimIndent(), JackDSL::compileWhileStatement
+        """.trimIndent(), JackAnalyizerDSL::compileWhileStatement
         )
         assertEquals((whileStatement.condition.term as VarNameTerm).value, "x")
         assertEquals(whileStatement.condition.terms[0].first, Operator.GREATER_THAN)
